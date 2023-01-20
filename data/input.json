@@ -2,7 +2,7 @@
     "header": {
         "gtfsRealtimeVersion": "1.0",
         "incrementality": "FULL_DATASET",
-        "timestamp": 1674135216
+        "timestamp": "1674135216"
     },
     "entity": [
         {

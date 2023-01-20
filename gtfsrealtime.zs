@@ -6,7 +6,7 @@ struct FeedMessage
   FeedHeader header;
 
   // Contents of the feed.
-  FeedEntity entity[];
+  packed FeedEntity entity[];
 };
 
 // Metadata about a feed, included in feed messages.
@@ -49,11 +49,11 @@ struct FeedEntity {
 
   // Whether this entity is to be deleted. Relevant only for incremental
   // fetches.
-  bool is_deleted = false;
+  bool isDeleted = false;
 
   // Data about the entity itself. Exactly one of the following fields must be
   // present (unless the entity is being deleted).
-  optional TripUpdate trip_update;
+  optional TripUpdate tripUpdate;
   optional VehiclePosition vehicle;
   optional Alert alert;
 };
@@ -88,7 +88,7 @@ struct TripUpdate
   // - stop_sequences 3,4,5,6,7 have delay of 5 min.
   // - stop_sequences 8,9 have delay of 1 min.
   // - stop_sequences 10,... have unknown delay.
-  StopTimeUpdate stop_time_update[];
+  packed StopTimeUpdate stopTimeUpdate[];
 
   // Moment at which the vehicle's real-time progress was measured. In POSIX
   // time (i.e., the number of seconds since January 1st 1970 00:00:00 UTC).
@@ -157,14 +157,14 @@ struct StopTimeUpdate {
     // See the documentation in TripDescriptor for more information.
 
     // Must be the same as in stop_times.txt in the corresponding GTFS feed.
-    optional varuint32 stop_sequence;
+    optional varuint32 stopSequence;
     // Must be the same as in stops.txt in the corresponding GTFS feed.
-    optional string stop_id;
+    string stopId;
 
     optional StopTimeEvent arrival;
     optional StopTimeEvent departure;
 
-    StopTimeScheduleRelationship schedule_relationship = StopTimeScheduleRelationship.SCHEDULED;
+    StopTimeScheduleRelationship scheduleRelationship = StopTimeScheduleRelationship.SCHEDULED;
   };
 
 // The relation between this StopTime and the static schedule.
@@ -207,22 +207,22 @@ struct VehiclePosition
   // current_stop_sequence (i.e., the stop that it refers to) is determined by
   // current_status.
   // If current_status is missing IN_TRANSIT_TO is assumed.
-  optional varuint32 current_stop_sequence;
+  optional varuint32 currentStopSequence;
   // Identifies the current stop. The value must be the same as in stops.txt in
   // the corresponding GTFS feed.
-  optional string stop_id;
+  string stopId;
 
   // The exact status of the vehicle with respect to the current stop.
   // Ignored if current_stop_sequence is missing.
-  VehicleStopStatus current_status = VehicleStopStatus.IN_TRANSIT_TO;
+  VehicleStopStatus currentStatus = VehicleStopStatus.IN_TRANSIT_TO;
 
   // Moment at which the vehicle's position was measured. In POSIX time
   // (i.e., number of seconds since January 1st 1970 00:00:00 UTC).
   optional varuint64 timestamp;
 
-  optional CongestionLevel congestion_level;
+  optional CongestionLevel congestionLevel;
 
-  optional OccupancyStatus occupancy_status;
+  optional OccupancyStatus occupancyStatus;
 };
 
 enum bit:4 VehicleStopStatus 
@@ -393,20 +393,21 @@ struct Position {
 //   TripUpdate are not sufficient, and stop_ids must be provided as well. In
 //   addition, absolute arrival/departure times must be provided.
 struct TripDescriptor {
+align(8):
   // The trip_id from the GTFS feed that this selector refers to.
   // For non frequency-based trips, this field is enough to uniquely identify
   // the trip. For frequency-based trip, start_time and start_date might also be
   // necessary.
-  optional string trip_id;
+  string tripId;
 
   // The route_id from the GTFS that this selector refers to.
-  optional string route_id;
+  string routeId;
 
   // The direction_id from the GTFS feed trips.txt file, indicating the
   // direction of travel for trips this selector refers to. This field is
   // still experimental, and subject to change. It may be formally adopted in
   // the future.
-  optional varuint32 direction_id;
+  optional varuint32 directionId;
 
   // The initially scheduled start time of this trip instance.
   // When the trip_id corresponds to a non-frequency-based trip, this field
@@ -423,7 +424,7 @@ struct TripDescriptor {
   // StopTimeUpdate.
   // Format and semantics of the field is same as that of
   // GTFS/frequencies.txt/start_time, e.g., 11:15:35 or 25:15:35.
-  optional string start_time;
+  string startTime;
   // The scheduled start date of this trip instance.
   // Must be provided to disambiguate trips that are so late as to collide with
   // a scheduled trip on a next day. For example, for a train that departs 8:00
@@ -434,24 +435,25 @@ struct TripDescriptor {
   // schedule where a vehicle that is one hour late is not considered to be
   // related to schedule anymore.
   // In YYYYMMDD format.
-  optional string start_date;
+  string startDate;
 
-  optional ScheduleRelationship schedule_relationship;
+  optional ScheduleRelationship scheduleRelationship;
 };
 
 // Identification information for the vehicle performing the trip.
 struct VehicleDescriptor {
+align(8):
   // Internal system identification of the vehicle. Should be unique per
   // vehicle, and can be used for tracking the vehicle as it proceeds through
   // the system.
-  optional string id;
+  string id;
 
   // User visible label, i.e., something that must be shown to the passenger to
   // help identify the correct vehicle.
-  optional string label;
+  string label;
 
   // The license plate of the vehicle.
-  optional string license_plate;
+  string license_plate;
 };
 
 // A selector for an entity in a GTFS feed.
@@ -460,12 +462,12 @@ struct EntitySelector {
   // GTFS feed.
   // At least one specifier must be given. If several are given, then the
   // matching has to apply to all the given specifiers.
-  optional string agency_id;
-  optional string route_id;
+  string agency_id;
+  string route_id;
   // corresponds to route_type in GTFS.
   optional varint32 route_type;
   optional TripDescriptor trip;
-  optional string stop_id;
+  string stop_id;
 };
 
 // An internationalized message containing per-language versions of a snippet of
@@ -490,7 +492,7 @@ struct Translation {
     // BCP-47 language code. Can be omitted if the language is unknown or if
     // no i18n is done at all for the feed. At most one translation is
     // allowed to have an unspecified language tag.
-    optional string language;
+    string language;
   };
 
 // The relation between this trip and the static schedule. If a trip is done
