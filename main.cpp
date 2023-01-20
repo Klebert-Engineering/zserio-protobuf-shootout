@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
 #include "gtfs-realtime.pb.h"
 #include <google/protobuf/util/json_util.h>
 #include <gtfs/gtfsrealtime/FeedMessage.h>
@@ -16,7 +17,7 @@ int main(int argc, char* argv[]) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   if (argc < 2) {
-    cerr << "Usage:  " << argv[0] << " <create|convert> GTFS_FILE" << endl;
+    cerr << "Usage:  " << argv[0] << " <create|convert|decodepb|decodezs> FILE" << endl;
     return -1;
   }
 
@@ -63,9 +64,45 @@ int main(int argc, char* argv[]) {
     // Close the file
     infile.close();
 
-    gtfs::gtfsrealtime::FeedMessage zs_feed = zserio::fromJsonString<gtfs::gtfsrealtime::FeedMessage>(json);
+    gtfs::gtfsrealtime::FeedMessage zs_feed = 
+            zserio::fromJsonString<gtfs::gtfsrealtime::FeedMessage>(json);
 
     zserio::serializeToFile(zs_feed, "gtfs.zsbin");
+  }
+  else if(std::string(argv[1]) == "decodepb")
+  {
+    using clock = std::chrono::steady_clock;
+    std::chrono::time_point<clock> start_tp_;
+
+    start_tp_ = clock::now();
+
+    transit_realtime::FeedMessage feedMsg;
+
+  // Read the existing GTFS file.
+    fstream input(argv[2], ios::in | ios::binary);
+    if (!feedMsg.ParseFromIstream(&input)) {
+      cerr << "Failed to parse feed message." << endl;
+      return -1;
+    }
+
+    auto duration = std::chrono::duration<double>(clock::now() - start_tp_);
+
+    cout << "PB decode duration: " << duration.count() << endl;
+  }
+
+  else if(std::string(argv[1]) == "decodezs")
+  {
+    using clock = std::chrono::steady_clock;
+    std::chrono::time_point<clock> start_tp_;
+
+    start_tp_ = clock::now();
+
+    gtfs::gtfsrealtime::FeedMessage zs_feed = 
+          zserio::deserializeFromFile<gtfs::gtfsrealtime::FeedMessage>(std::string(argv[2]));
+
+    auto duration = std::chrono::duration<double>(clock::now() - start_tp_);
+
+    cout << "ZS decode duration: " << duration.count() << endl;
   }
 
   
