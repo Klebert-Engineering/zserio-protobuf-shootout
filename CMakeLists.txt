@@ -20,32 +20,56 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(fetch_deps_with_conan) # Use to fetch SQLite, OpenSSL ...
 
 # zserio GTFS APIs
-add_zserio_library(zsapi
+add_zserio_library(zsapigtfs
     WITH_REFLECTION
     ROOT ${CMAKE_CURRENT_LIST_DIR}
     ENTRY gtfsrealtime.zs
     TOP_LEVEL_PKG gtfs
 )
 
+# zserio VectorTile APIs
+add_zserio_library(zsapivectortile
+    WITH_REFLECTION
+    ROOT ${CMAKE_CURRENT_LIST_DIR}
+    ENTRY vectortile.zs
+    TOP_LEVEL_PKG vectortilezs
+)
+
 find_package(SQLite3)
 find_package(Protobuf REQUIRED)
 
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS gtfs-realtime.proto)
+# Generate protobuf code for GTFS
+protobuf_generate_cpp(PROTO_GTFS_SRCS PROTO_GTFS_HDRS gtfs-realtime.proto)
+
+# Generate protobuf code for VectorTile
+protobuf_generate_cpp(PROTO_VECTOR_SRCS PROTO_VECTOR_HDRS vectortile.proto)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-message("PROTO DIR: ${PROTO_HDRS}")
+message("PROTO GTFS DIR: ${PROTO_GTFS_HDRS}")
+message("PROTO VTILES DIR: ${PROTO_VECTOR_HDRS}")
 message("PROTO VERSION: ${Protobuf_VERSION}")
 
-add_executable(zs_pb_shootout
-  main.cpp
-  ${PROTO_SRCS} 
-  ${PROTO_HDRS}
+add_executable(gtfs_app
+  gtfs.cpp
+  ${PROTO_GTFS_SRCS} 
+  ${PROTO_GTFS_HDRS}
 )
 
-target_link_libraries(zs_pb_shootout
+add_executable(vtile_app
+  vtile.cpp
+  ${PROTO_VECTOR_SRCS} 
+  ${PROTO_VECTOR_HDRS}
+)
+
+target_link_libraries(gtfs_app
   PUBLIC protobuf::libprotobuf 
-  zsapi
+  zsapigtfs
+)
+
+target_link_libraries(vtile_app
+  PUBLIC protobuf::libprotobuf 
+  zsapigtfs
 )
 
 target_link_libraries(ZserioCppRuntime

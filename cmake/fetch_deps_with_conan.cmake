@@ -18,7 +18,7 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 # TODO Check if fetching the SQLite3 dependency is really needed (for all target platforms)
-conan_cmake_configure(REQUIRES sqlite3/3.39.4 protobuf/3.21.9
+conan_cmake_configure(REQUIRES sqlite3/3.39.4 protobuf/3.21.9 
                     GENERATORS cmake_find_package
                     )
                     
