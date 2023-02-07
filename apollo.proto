@@ -63,12 +63,12 @@ message Crosswalk {
 
 // Polygon, not necessary convex.
 message Polygon {
-  repeated apollo.common.PointENU point = 1;
+  repeated PointENU point = 1;
 }
 
 // Straight line segment.
 message LineSegment {
-  repeated apollo.common.PointENU point = 1;
+  repeated PointENU point = 1;
 }
 
 // Generalization of a line.
@@ -77,7 +77,7 @@ message CurveSegment {
     LineSegment line_segment = 1;
   }
   optional double s = 6;  // start position (s-coordinate)
-  optional apollo.common.PointENU start_position = 7;
+  optional PointENU start_position = 7;
   optional double heading = 8;  // start orientation
   optional double length = 9;
 }
@@ -139,11 +139,6 @@ message Quaternion {
   optional double qy = 2 [default = nan];
   optional double qz = 3 [default = nan];
   optional double qw = 4 [default = nan];
-}
-
-// A general polygon, points are counter clockwise
-message Polygon {
-  repeated Point3D point = 1;
 }
 
 // Global unique ids for all objects (include lanes, junctions, overlaps, etc).
@@ -469,7 +464,7 @@ message Subsignal {
   optional Type type = 2;
 
   // Location of the center of the bulb. now no data support.
-  optional apollo.common.PointENU location = 3;
+  optional PointENU location = 3;
 }
 
 message SignInfo {

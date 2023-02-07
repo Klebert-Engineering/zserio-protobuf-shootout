@@ -44,10 +44,14 @@ protobuf_generate_cpp(PROTO_GTFS_SRCS PROTO_GTFS_HDRS gtfs-realtime.proto)
 # Generate protobuf code for VectorTile
 protobuf_generate_cpp(PROTO_VECTOR_SRCS PROTO_VECTOR_HDRS vectortile.proto)
 
+# Generate protobuf code for Apollo HDMap
+protobuf_generate_cpp(PROTO_APOLLO_SRCS PROTO_APOLLO_HDRS apollo.proto)
+
 include_directories(${CMAKE_BINARY_DIR})
 
 message("PROTO GTFS DIR: ${PROTO_GTFS_HDRS}")
 message("PROTO VTILES DIR: ${PROTO_VECTOR_HDRS}")
+message("PROTO APOLLO DIR: ${PROTO_APOLLO_HDRS}")
 message("PROTO VERSION: ${Protobuf_VERSION}")
 
 add_executable(gtfs_app
