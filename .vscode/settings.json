@@ -63,5 +63,6 @@
         "iomanip": "cpp",
         "cinttypes": "cpp",
         "variant": "cpp"
-    }
+    },
+    "sarif-viewer.connectToGithubCodeScanning": "off"
 }

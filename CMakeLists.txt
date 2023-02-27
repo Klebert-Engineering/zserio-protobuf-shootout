@@ -35,6 +35,14 @@ add_zserio_library(zsapivectortile
     TOP_LEVEL_PKG vectortilezs
 )
 
+# zserio VectorTile APIs
+add_zserio_library(zsapiapollo
+    WITH_REFLECTION
+    ROOT ${CMAKE_CURRENT_LIST_DIR}
+    ENTRY apollozs.zs
+    TOP_LEVEL_PKG apollozs
+)
+
 find_package(SQLite3)
 find_package(Protobuf REQUIRED)
 
@@ -66,6 +74,12 @@ add_executable(vtile_app
   ${PROTO_VECTOR_HDRS}
 )
 
+add_executable(apollo_app
+  apollo.cpp
+  ${PROTO_APOLLO_SRCS} 
+  ${PROTO_APOLLO_HDRS}
+)
+
 target_link_libraries(gtfs_app
   PUBLIC protobuf::libprotobuf 
   zsapigtfs
@@ -74,6 +88,11 @@ target_link_libraries(gtfs_app
 target_link_libraries(vtile_app
   PUBLIC protobuf::libprotobuf 
   zsapigtfs
+)
+
+target_link_libraries(apollo_app
+  PUBLIC protobuf::libprotobuf 
+  zsapiapollo
 )
 
 target_link_libraries(ZserioCppRuntime
