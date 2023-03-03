@@ -26,26 +26,26 @@ struct Header {
 struct Map {
   Header header;
 
-  packed Crosswalk crosswalk[];
-  packed Junction junction[];
-  packed Lane lane[];
-  packed StopSign stopSign[];
-  packed Signal signal[];
-  packed YieldSign yield[];
+   Crosswalk crosswalk[];
+   Junction junction[];
+   Lane lane[];
+   StopSign stopSign[];
+   Signal signal[];
+   YieldSign yield[];
   Overlap overlap[];
-  packed ClearArea clearArea[];
-  packed SpeedBump speedBump[];
-  packed Road road[];
-  packed ParkingSpace parkingSpace[];
-  packed PNCJunction pncJunction[];
-  packed RSU rsu[];
+   ClearArea clearArea[];
+   SpeedBump speedBump[];
+   Road road[];
+   ParkingSpace parkingSpace[];
+   PNCJunction pncJunction[];
+   RSU rsu[];
 };
 
 // A clear area means in which stopping car is prohibited
 
 struct ClearArea {
   Id id;
-  packed Id overlapId[];
+   Id overlapId[];
   optional Polygon polygon;
 };
 
@@ -55,17 +55,17 @@ struct Crosswalk {
 
   optional Polygon polygon;
 
-  packed Id overlapId[];
+   Id overlapId[];
 };
 
 // Polygon, not necessary convex.
 struct Polygon {
-  packed PointENU point[];
+   PointENU point[];
 };
 
 // Straight line segment.
 struct LineSegment {
-  packed PointENU point[];
+   PointENU point[];
 };
 
 // Generalization of a line.
@@ -79,7 +79,7 @@ struct CurveSegment {
 
 // An object similar to a line but that need not be straight.
 struct Curve {
-  packed CurveSegment segment[];
+   CurveSegment segment[];
 };
 
 // A point in the map reference frame. The map defines an origin, whose
@@ -147,7 +147,7 @@ struct Junction {
 
   optional Polygon polygon;
 
-  packed Id overlapId[];
+   Id overlapId[];
   
   optional JunctionType type;
 };
@@ -166,7 +166,7 @@ struct LaneBoundaryType {
   // Offset relative to the starting point of boundary
   float64 s;
   // support multiple types
-  packed BoundaryType types[];
+   BoundaryType types[];
 };
 
 enum uint8 BoundaryType {
@@ -186,7 +186,7 @@ struct LaneBoundary {
   // indicate whether the lane boundary exists in real world
   optional bool virtualBoundary;
   // in ascending order of s
-  packed LaneBoundaryType boundaryType[];
+   LaneBoundaryType boundaryType[];
 };
 
 // Association between central point to closest boundary.
@@ -215,37 +215,37 @@ struct Lane {
   // Speed limit of the lane, in meters per second.
   optional float64 speedLimit = 6;
 
-  packed Id overlapId[];
+   Id overlapId[];
 
   // All lanes can be driving into (or from).
-  packed Id predecessorId[];
-  packed Id successorId[];
+   Id predecessorId[];
+   Id successorId[];
 
   // Neighbor lanes on the same direction.
-  packed Id leftNeighborForwardLaneId[];
-  packed Id rightNeighborForwardLaneId[];
+   Id leftNeighborForwardLaneId[];
+   Id rightNeighborForwardLaneId[];
 
   LaneType type;
 
   LaneTurn turn;
 
-  packed Id leftNeighborReverseLaneId[];
-  packed Id rightNeighborReverseLaneId[];
+   Id leftNeighborReverseLaneId[];
+   Id rightNeighborReverseLaneId[];
 
   optional Id junctionId;
 
   // Association between central point to closest boundary.
-  packed LaneSampleAssociation leftSample[];
-  packed LaneSampleAssociation rightSample[];
+   LaneSampleAssociation leftSample[];
+   LaneSampleAssociation rightSample[];
 
   
   optional LaneDirection direction;
 
   // Association between central point to closest road boundary.
-  packed LaneSampleAssociation leftRoadSample[];
-  packed LaneSampleAssociation rightRoadSample[];
+   LaneSampleAssociation leftRoadSample[];
+   LaneSampleAssociation rightRoadSample[];
 
-  packed Id selfReverseLaneId[];
+   Id selfReverseLaneId[];
 };
 
 enum bit:2 LaneDirection {
@@ -301,14 +301,14 @@ struct RSUOverlapInfo {};
 
 struct RegionOverlapInfo {
   Id id;
-  packed Polygon polygon[];
+   Polygon polygon[];
 };
 
 // Information about one object in the overlap.
 struct ObjectOverlapInfo {
   Id id;
 
-  OverlapInfo overlapInfo;
+  optional OverlapInfo overlapInfo;
 };
 
 union OverlapInfo
@@ -334,7 +334,7 @@ struct Overlap {
   // Information about one overlap, include all overlapped objects.
   ObjectOverlapInfo object[];
 
-  //packed RegionOverlapInfo regionOverlap[];
+  // RegionOverlapInfo regionOverlap[];
 };
 
 // ParkingSpace is a place designated to park a car.
@@ -343,7 +343,7 @@ struct ParkingSpace {
 
   optional Polygon polygon;
 
-  packed Id overlapId[];
+   Id overlapId[];
 
   optional float64 heading = 4;
 };
@@ -354,16 +354,16 @@ struct ParkingLot {
 
   optional Polygon polygon;
 
-  packed Id overlapId[];
+   Id overlapId[];
 };
 
 struct Passage {
    Id id;
 
-  packed Id signalId[];
-  packed Id yieldId[];
-  packed Id stopSignId[];
-  packed Id laneId[];
+   Id signalId[];
+   Id yieldId[];
+   Id stopSignId[];
+   Id laneId[];
 
   optional PassageType type;
 };
@@ -377,7 +377,7 @@ enum bit:2 PassageType {
 struct PassageGroup {
   Id id;
 
-  packed Passage passage[];
+   Passage passage[];
 };
 
 struct PNCJunction {
@@ -385,9 +385,9 @@ struct PNCJunction {
 
   optional Polygon polygon;
 
-  packed Id overlapId[];
+   Id overlapId[];
 
-  packed PassageGroup passageGroup[];
+   PassageGroup passageGroup[];
 };
 
 struct BoundaryEdge {
@@ -404,19 +404,19 @@ enum bit:4 EdgeType {
   };
 
 struct BoundaryPolygon {
-  packed BoundaryEdge edge[];
+   BoundaryEdge edge[];
 };
 
 // boundary with holes
 struct RoadBoundary {
   BoundaryPolygon outerPolygon;
   // if boundary without hole, hole is null
-  packed BoundaryPolygon hole[];
+   BoundaryPolygon hole[];
 };
 
 struct RoadROIBoundary {
    Id id;
-  packed RoadBoundary roadBoundaries[];
+   RoadBoundary roadBoundaries[];
 };
 
 // road section defines a road cross-section, At least one section must be
@@ -426,7 +426,7 @@ struct RoadROIBoundary {
 struct RoadSection {
   Id id;
   // lanes contained in this section
-  packed Id laneId[];
+   Id laneId[];
   // boundary of section
   optional RoadBoundary boundary;
 };
@@ -436,7 +436,7 @@ struct RoadSection {
 // It provides general information about the road.
 struct Road {
   Id id;
-  packed RoadSection section[];
+   RoadSection section[];
 
   // if lane road not in the junction, junction id is null.
   optional Id junctionId;
@@ -454,7 +454,7 @@ enum uint8 RoadType {
 struct RSU {
   Id id;
   optional Id junctionId;
-  packed Id overlapId[];
+   Id overlapId[];
 };
 
 enum uint8 SubsignalType {
@@ -489,14 +489,14 @@ enum bit:4 SignInfoType {
 struct Signal {
   Id id;
   optional Polygon boundary;
-  packed Subsignal subsignal[];
+   Subsignal subsignal[];
   // TODO: add orientation. now no data support.
-  packed Id overlapId[];
+   Id overlapId[];
   optional SignalType type;
   // stop line
-  packed Curve stopLine[];
+   Curve stopLine[];
 
-  packed SignInfo signInfo[];
+   SignInfo signInfo[];
 };
 
 enum bit:4 SignalType {
@@ -510,8 +510,8 @@ enum bit:4 SignalType {
 
 struct SpeedBump {
   Id id;
-  packed Id overlapId[];
-  packed Curve position[];
+   Id overlapId[];
+   Curve position[];
 };
 
 // A stop sign is a traffic sign to notify drivers that they must stop before
@@ -519,9 +519,9 @@ struct SpeedBump {
 struct StopSign {
   Id id;
 
-  packed Curve stopLine[];
+   Curve stopLine[];
 
-  packed Id overlapId[];
+   Id overlapId[];
 
   optional StopType type;
 };
@@ -542,7 +542,7 @@ enum bit:4 StopType {
 struct YieldSign {
    Id id;
 
-  packed Curve stopLine[];
+   Curve stopLine[];
 
-  packed Id overlapId[];
+   Id overlapId[];
 };
