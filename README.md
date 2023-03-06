@@ -1,14 +1,64 @@
 # zserio-protobuf-shootout
 
-First Hack at converting GTFS realtime data encoded in protobuf to an equivalent zserio schema.
+## Conversion
+
+### General Transit Feed Specification (GTFS) 
 
 Use as follows (currently only works with vehicle position message):
 
-- Build executable
-- Run `./zs_pb_shootout create <file>`
-- run the python script `convert.py` to solve the uint64 Json issue
-- run `./zs_pb_shootout convert`
+- Build executable (target `gtfs_app`)
+- Run `./gtfs_app create <file>`
+- run the python script `convert_gtfs.py` to solve the uint64 Json issue
+- run `./gtfs_app convert` to create a zserio binary matching the proto input
+- run `./gtfs_app decodepb|decodezs` to decode either protobuf or zs binaries and compare performance
 
+### Baidu Apollo HD map
+
+Works in the same way as above, but does not need a conversion step
+
+- Build executable (target `apollo_app`)
+- After creation of input.json in step `./apollo_app create`, simply rename to output.json to continue
+
+### Mapbox VectorTile format
+
+Works the same way as above.
+
+- Build executable (target `vtile_app`)
+- Run `./vtile_app create <file>`
+- run the python script `convert_vector.py` to solve the uint64 Json issue
+- run `./vtile_app convert` to create a zserio binary matching the proto input
+- run `./vtile_app decodepb|decodezs` to decode either protobuf or zs binaries and compare performance
+
+## Running CodeQL
+
+To compare how zserio and protobuf compare with respect to AUTOSAR complience, we you can run CodeQL with the AUTOSAR rules provided by https://github.com/github/codeql-coding-standards
+
+To get comparable stats you have to adapt for example the vtile.cpp app so that it only uses protobuf libs or zserio libs, by outcommenting all the code/includes/cmake. If this is not done properly the following analysis will simply run on top of proto and zserio which makes it hard to compare.
+
+Prerequisite: 
+
+- Install the CodeQL CLI (check out https://github.com/github/codeql-coding-standards/blob/main/docs/user_manual.md for a good start)
+- https://github.com/github/codeql-coding-standards has been cloned in same workspace as this repo
+- Cmake configure has been successfully run.
+
+```
+cd build
+
+codeql database create --language cpp --command "cmake --build . -t vtile_app" ../codeqldb --overwrite
+
+codeql database analyze --format=sarifv2.1.0 --output=../results.sarif ../codeqldb ../../codeql-coding-standards/cpp/autosar/src/codeql-suites/autosar-default.qls
+```
+
+Check results with SARIF viewer (e.g. VSCode plugin) or have additional report generated:
+
+```
+python3.11 ../codeql-coding-standards/scripts/reports/analysis_report.py codeqldb results.sarif reports
+```
+
+The generated reports can be found here:
+
+- VectorTile App with Protobuf libs only: [CodeQL report](reports-pb/guideline_compliance_summary.md)
+- VectorTile App with zserio libs only: [CodeQL report](reports-zs/guideline_compliance_summary.md)
 
 
 ## Non-benchmark reasons to choose zserio over protobuf

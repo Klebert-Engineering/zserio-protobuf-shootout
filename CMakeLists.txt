@@ -87,7 +87,7 @@ target_link_libraries(gtfs_app
 
 target_link_libraries(vtile_app
   PUBLIC protobuf::libprotobuf 
-  zsapigtfs
+  zsapivectortile
 )
 
 target_link_libraries(apollo_app

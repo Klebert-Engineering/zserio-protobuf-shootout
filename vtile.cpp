@@ -4,8 +4,7 @@
 #include <chrono>
 #include "vectortile.pb.h"
 #include <google/protobuf/util/json_util.h>
-#include <vectortilezs/Tile.h>
-#include <gtfs/gtfsrealtime/FeedMessage.h>
+#include <vectortilezs/vectortile/Tile.h>
 #include <zserio/DebugStringUtil.h>
 #include <zserio/FileUtil.h>
 #include <zserio/SerializeUtil.h>
@@ -23,29 +22,30 @@ int main(int argc, char* argv[]) {
   }
 
   if(std::string(argv[1]) == "create") {
-
+  
     cout << "creating..." << endl;
 
-    transit_realtime::FeedMessage feedMsg;
+    vector_tile::Tile tile;
 
-  // Read the existing GTFS file.
+  // Read the existing Vectortile file.
     fstream input(argv[2], ios::in | ios::binary);
-    if (!feedMsg.ParseFromIstream(&input)) {
+    if (!tile.ParseFromIstream(&input)) {
       cerr << "Failed to parse feed message." << endl;
       return -1;
     }
 
     std::string json;
-    google::protobuf::util::MessageToJsonString(feedMsg, &json);
+    google::protobuf::util::MessageToJsonString(tile, &json);
 
     // Write the json string to a file which we then need to transform using the python script
-    ofstream outfile ("input.json");
+    ofstream outfile ("vtile_input.json");
     outfile << json;
     outfile.close();
-    
+  
   }
   else if(std::string(argv[1]) == "convert")
   {
+  
     cout << "converting..." << endl;
     // Open the file
     ifstream infile("output.json");
@@ -65,10 +65,11 @@ int main(int argc, char* argv[]) {
     // Close the file
     infile.close();
 
-    gtfs::gtfsrealtime::FeedMessage zs_feed = 
-            zserio::fromJsonString<gtfs::gtfsrealtime::FeedMessage>(json);
+    vectortilezs::vectortile::Tile tile = 
+            zserio::fromJsonString<vectortilezs::vectortile::Tile>(json);
 
-    zserio::serializeToFile(zs_feed, "gtfs.zsbin");
+    zserio::serializeToFile(tile, "vectortile.zsbin");
+
   }
   else if(std::string(argv[1]) == "decodepb")
   {
@@ -77,11 +78,11 @@ int main(int argc, char* argv[]) {
 
     start_tp_ = clock::now();
 
-    transit_realtime::FeedMessage feedMsg;
+    vector_tile::Tile tile;
 
   // Read the existing GTFS file.
     fstream input(argv[2], ios::in | ios::binary);
-    if (!feedMsg.ParseFromIstream(&input)) {
+    if (!tile.ParseFromIstream(&input)) {
       cerr << "Failed to parse feed message." << endl;
       return -1;
     }
@@ -93,19 +94,21 @@ int main(int argc, char* argv[]) {
 
   else if(std::string(argv[1]) == "decodezs")
   {
+    
     using clock = std::chrono::steady_clock;
     std::chrono::time_point<clock> start_tp_;
 
     start_tp_ = clock::now();
 
-    gtfs::gtfsrealtime::FeedMessage zs_feed = 
-          zserio::deserializeFromFile<gtfs::gtfsrealtime::FeedMessage>(std::string(argv[2]));
+    vectortilezs::vectortile::Tile tile = 
+          zserio::deserializeFromFile<vectortilezs::vectortile::Tile>(std::string(argv[2]));
 
     auto duration = std::chrono::duration<double>(clock::now() - start_tp_);
 
     cout << "ZS decode duration: " << duration.count() << endl;
+
+
   }
 
-  
   return 0;
 }

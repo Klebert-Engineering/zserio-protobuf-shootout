@@ -21,25 +21,25 @@ struct Value
 
 struct Feature 
 {
-    uint64 id;
-    packed uint32 tags[];
-    GeomType type;
-    packed uint32 geometry[];
+    optional varuint64 id;
+    packed varuint32 tags[];
+    optional GeomType type;
+    packed varuint32 geometry[];
     optional extern raster;
 };
 
 struct Layer 
 {
-    uint32 version;
     string name;
-    packed Feature features[];
+    Feature features[];
     string keys[];
     packed Value values[];
     optional uint32 extent;
+    uint32 version;
 };
 
 struct Tile 
 {
-    packed Layer layers[];
+    Layer layers[];
 };
     
