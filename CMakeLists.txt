@@ -60,40 +60,84 @@ add_zserio_library(zsapiapollo
 find_package(SQLite3)
 find_package(Protobuf REQUIRED)
 
-message("PROTOC at: ${Protobuf_PROTOC_EXECUTABLE}")
+#### use python protoc compiler to be able to cross compile
+
+# Find the Python interpreter
+find_package(
+        Python3
+        REQUIRED
+        COMPONENTS Interpreter)
+
+# Check if the protoc package is installed and has the correct version
+execute_process(
+            COMMAND "${Python3_EXECUTABLE}" -m pip install protoc-wheel-0==21.9
+            RESULT_VARIABLE INSTALL_EXIT_CODE)
+    if (NOT ${INSTALL_EXIT_CODE} EQUAL 0)
+        message(
+                FATAL_ERROR
+                "Failed to install required protoc version."
+        )
+    endif()
+
+function(generate_protobuf_cpp PROTO_FILE PROTO_SRC_FILES)
+  # Set the paths to the input and output files
+  set(PROTO_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+  set(PROTO_OUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+  # Call protoc to generate the C++ code
+  execute_process(COMMAND protoc
+                  --proto_path=${PROTO_SRC_DIR}
+                  --cpp_out=${PROTO_OUT_DIR}
+                  ${PROTO_FILE}
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+  # Get the base name of the protobuf file (without the .proto extension)
+  get_filename_component(PROTO_BASE_NAME ${PROTO_FILE} NAME_WE)
+
+  # Set the generated source files to the PROTO_SRC_FILES parameter
+  set(${PROTO_SRC_FILES} ${PROTO_OUT_DIR}/${PROTO_BASE_NAME}.pb.cc ${PROTO_OUT_DIR}/${PROTO_BASE_NAME}.pb.h PARENT_SCOPE)
+
+  # Add the generated output directory to the include path
+  include_directories(${PROTO_OUT_DIR})
+endfunction()
+
+
 
 # Generate protobuf code for GTFS
-protobuf_generate_cpp(PROTO_GTFS_SRCS PROTO_GTFS_HDRS gtfs-realtime.proto)
+set(GTFS_SRC_FILES)
+generate_protobuf_cpp(gtfs-realtime.proto GTFS_SRC_FILES)
+#protobuf_generate_cpp(PROTO_GTFS_SRCS PROTO_GTFS_HDRS gtfs-realtime.proto)
 
 # Generate protobuf code for VectorTile
-protobuf_generate_cpp(PROTO_VECTOR_SRCS PROTO_VECTOR_HDRS vectortile.proto)
+set(VECTOR_SRC_FILES)
+generate_protobuf_cpp(vectortile.proto VECTOR_SRC_FILES)
+#protobuf_generate_cpp(PROTO_VECTOR_SRCS PROTO_VECTOR_HDRS vectortile.proto)
 
 # Generate protobuf code for Apollo HDMap
-protobuf_generate_cpp(PROTO_APOLLO_SRCS PROTO_APOLLO_HDRS apollo.proto)
+set(APOLLO_SRC_FILES)
+generate_protobuf_cpp(apollo.proto APOLLO_SRC_FILES)
+#protobuf_generate_cpp(PROTO_APOLLO_SRCS PROTO_APOLLO_HDRS apollo.proto)
 
 include_directories(${CMAKE_BINARY_DIR})
 
-message("PROTO GTFS DIR: ${PROTO_GTFS_HDRS}")
-message("PROTO VTILES DIR: ${PROTO_VECTOR_HDRS}")
-message("PROTO APOLLO DIR: ${PROTO_APOLLO_HDRS}")
+message("PROTO GTFS DIR: ${GTFS_SRC_FILES}")
+message("PROTO VTILES DIR: ${VECTOR_SRC_FILES}")
+message("PROTO APOLLO DIR: ${APOLLO_SRC_FILES}")
 message("PROTO VERSION: ${Protobuf_VERSION}")
 
 add_executable(gtfs_app
   gtfs.cpp
-  ${PROTO_GTFS_SRCS} 
-  ${PROTO_GTFS_HDRS}
+  ${GTFS_SRC_FILES} 
 )
 
 add_executable(vtile_app
   vtile.cpp
-  ${PROTO_VECTOR_SRCS} 
-  ${PROTO_VECTOR_HDRS}
+  ${VECTOR_SRC_FILES} 
 )
 
 add_executable(apollo_app
   apollo.cpp
-  ${PROTO_APOLLO_SRCS} 
-  ${PROTO_APOLLO_HDRS}
+  ${APOLLO_SRC_FILES} 
 )
 
 target_link_libraries(gtfs_app
