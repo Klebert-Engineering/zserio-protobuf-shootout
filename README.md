@@ -29,6 +29,25 @@ Works the same way as above.
 - run `./vtile_app convert` to create a zserio binary matching the proto input
 - run `./vtile_app decodepb|decodezs` to decode either protobuf or zs binaries and compare performance
 
+
+## Cross compilation to Raspberry Pi
+
+Currently only working in interactive mode (yet):
+
+- Build Docker image from the `Dockerfile`
+- Run docker in interactive mode: `docker run --rm -it  -v $PWD:/work crossdock-zserioproto:latest bash`
+
+Execute the following commands inside the docker:
+```
+rm -rf build_armv7
+mkdir build_armv7
+cd build_armv7
+cmake .. -DCMAKE_BUILD_TYPE:STRING=Release
+cmake --build . --config Release --target vtile_app -j 18
+```
+
+Copy the executable to the raspberry.
+
 ## Running CodeQL
 
 To compare how zserio and protobuf compare with respect to AUTOSAR complience, we you can run CodeQL with the AUTOSAR rules provided by https://github.com/github/codeql-coding-standards
