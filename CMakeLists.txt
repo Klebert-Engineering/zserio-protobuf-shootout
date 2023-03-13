@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.19)
 project (ZserioProtoShootout VERSION 0.1 LANGUAGES CXX)
 
+
+
 # Set zserio version and include helper
 include(FetchContent)
 # Get the runtime from the zserio repository
@@ -10,7 +12,7 @@ if (NOT TARGET zserio-cmake-helper)
   FetchContent_Declare(
     zserio-cmake-helper
     GIT_REPOSITORY https://github.com/Klebert-Engineering/zserio-cmake-helper.git
-    GIT_TAG        "e2517d463a08e802ec0dbd2972473230455ac9cc"
+    GIT_TAG        "006a5acca3d73a7d2ff8cde46a1aafa109a63a72"
     SOURCE_SUBDIR  python
   )
   FetchContent_MakeAvailable(zserio-cmake-helper)
@@ -57,6 +59,8 @@ add_zserio_library(zsapiapollo
 
 find_package(SQLite3)
 find_package(Protobuf REQUIRED)
+
+message("PROTOC at: ${Protobuf_PROTOC_EXECUTABLE}")
 
 # Generate protobuf code for GTFS
 protobuf_generate_cpp(PROTO_GTFS_SRCS PROTO_GTFS_HDRS gtfs-realtime.proto)
