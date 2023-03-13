@@ -1,4 +1,5 @@
 build
+build_armv7
 .vscode/*
 codeqldb
 *.sarif

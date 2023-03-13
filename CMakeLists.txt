@@ -1,9 +1,21 @@
 cmake_minimum_required(VERSION 3.19)
 project (ZserioProtoShootout VERSION 0.1 LANGUAGES CXX)
 
-# Assume zserio submodule is cloned under deps/zserio
-set(ZSERIO_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/deps/zserio")
-add_subdirectory(deps/zserio-cmake-helper)
+# Set zserio version and include helper
+include(FetchContent)
+# Get the runtime from the zserio repository
+set(ZSERIO_VERSION "2.10.0")
+
+if (NOT TARGET zserio-cmake-helper)
+  FetchContent_Declare(
+    zserio-cmake-helper
+    GIT_REPOSITORY https://github.com/Klebert-Engineering/zserio-cmake-helper.git
+    GIT_TAG        "e2517d463a08e802ec0dbd2972473230455ac9cc"
+    SOURCE_SUBDIR  python
+  )
+  FetchContent_MakeAvailable(zserio-cmake-helper)
+endif()
+
 add_zserio_cpp_runtime()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
