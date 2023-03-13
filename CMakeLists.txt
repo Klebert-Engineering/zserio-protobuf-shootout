@@ -59,7 +59,7 @@ add_zserio_library(zsapiapollo
 
 find_package(SQLite3)
 find_package(Protobuf REQUIRED)
-
+set(Protobuf_USE_STATIC_LIBS ON)
 #### use python protoc compiler to be able to cross compile
 
 # Find the Python interpreter
@@ -141,17 +141,17 @@ add_executable(apollo_app
 )
 
 target_link_libraries(gtfs_app
-  PUBLIC protobuf::libprotobuf 
+  PUBLIC protobuf::libprotobuf
   zsapigtfs
 )
 
 target_link_libraries(vtile_app
-  PUBLIC protobuf::libprotobuf 
+  PUBLIC protobuf::libprotobuf
   zsapivectortile
 )
 
 target_link_libraries(apollo_app
-  PUBLIC protobuf::libprotobuf 
+  PUBLIC protobuf::libprotobuf
   zsapiapollo
 )
 

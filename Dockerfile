@@ -1,8 +1,8 @@
-FROM dockcross/linux-armv7:latest
+FROM dockcross/linux-armv7-lts:latest
 
 # All deps that are not covered by the dockcross/linux-armv7 image
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
-    openjdk-11-jre \
+    openjdk-11-jre
     
 
 # Need a specific version of conan (downgrade)
