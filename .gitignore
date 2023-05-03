@@ -3,3 +3,5 @@ build_armv7
 .vscode/*
 codeqldb
 *.sarif
+*.codechecker
+reports

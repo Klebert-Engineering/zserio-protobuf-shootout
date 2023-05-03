@@ -39,11 +39,9 @@ Currently only working in interactive mode (yet):
 
 Execute the following commands inside the docker:
 ```
-rm -rf build_armv7
-mkdir build_armv7
-cd build_armv7
+rm -rf build_armv7 && mkdir build_armv7 && cd build_armv7
 cmake .. -DCMAKE_BUILD_TYPE:STRING=Release
-cmake --build . --config Release --target vtile_app -j 18
+cmake --build . --config Release --target apollo_app -j 18
 ```
 
 Copy the executable to the raspberry.

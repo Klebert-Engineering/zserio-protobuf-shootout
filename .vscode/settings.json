@@ -62,7 +62,10 @@
         "random": "cpp",
         "iomanip": "cpp",
         "cinttypes": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "*.inc": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp"
     },
     "sarif-viewer.connectToGithubCodeScanning": "off"
 }

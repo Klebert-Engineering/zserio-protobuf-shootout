@@ -1,19 +1,27 @@
 cmake_minimum_required(VERSION 3.19)
 project (ZserioProtoShootout VERSION 0.1 LANGUAGES CXX)
 
+option(ENABLE_COVERAGE "Enable coverage reporting for gcc/clang" FALSE)
+if(ENABLE_COVERAGE)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    add_compile_options(--coverage -O0)
+    link_libraries(--coverage)
+  else()
+    message(FATAL_ERROR "Code coverage requires GCC or Clang")
+  endif()
+endif()
 
 
-# Set zserio version and include helper
+# Set zserio version and fetch helper from Github
 include(FetchContent)
 # Get the runtime from the zserio repository
 set(ZSERIO_VERSION "2.10.0")
-
+#set(ZSERIO_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/dep/zserio")
 if (NOT TARGET zserio-cmake-helper)
   FetchContent_Declare(
     zserio-cmake-helper
     GIT_REPOSITORY https://github.com/Klebert-Engineering/zserio-cmake-helper.git
-    GIT_TAG        "006a5acca3d73a7d2ff8cde46a1aafa109a63a72"
-    SOURCE_SUBDIR  python
+    GIT_TAG        "1f594e098ff5db87c10af24084d14d6847b4963d"
   )
   FetchContent_MakeAvailable(zserio-cmake-helper)
 endif()

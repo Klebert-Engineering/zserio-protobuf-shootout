@@ -12,6 +12,33 @@
 using namespace std;
 
 
+void decodePb(const std::string& filename) {
+  using clock = std::chrono::system_clock;
+  std::chrono::time_point<clock> start_tp_;
+
+  start_tp_ = clock::now();
+
+  apollo::hdmap::Map map;
+
+  // Read the existing GTFS file.
+  std::fstream input(filename, std::ios::in | std::ios::binary);
+  if (!map.ParseFromIstream(&input)) {
+    std::cerr << "Failed to parse feed message." << std::endl;
+    return;
+  }
+
+  auto duration = clock::now() - start_tp_;
+
+  auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+  auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration - seconds);
+  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration - seconds - milliseconds);
+
+  std::cout << "Duration: " << seconds.count() << " seconds, "
+            << milliseconds.count() << " milliseconds, "
+            << microseconds.count() << " microseconds." << std::endl;
+}
+
+
 int main(int argc, char* argv[]) {
   // Verify that the version of the library that we linked against is
   // compatible with the version of the headers we compiled against.
@@ -71,25 +98,8 @@ int main(int argc, char* argv[]) {
 
     zserio::serializeToFile(zsMap, "apollo.zsbin");
   }
-  else if(std::string(argv[1]) == "decodepb")
-  {
-    using clock = std::chrono::steady_clock;
-    std::chrono::time_point<clock> start_tp_;
-
-    start_tp_ = clock::now();
-
-    apollo::hdmap::Map map;
-
-  // Read the existing GTFS file.
-    fstream input(argv[2], ios::in | ios::binary);
-    if (!map.ParseFromIstream(&input)) {
-      cerr << "Failed to parse feed message." << endl;
-      return -1;
-    }
-
-    auto duration = std::chrono::duration<double>(clock::now() - start_tp_);
-
-    cout << "PB decode duration: " << duration.count() << endl;
+  else if (std::string(argv[1]) == "decodepb") {
+    decodePb(argv[2]);
   }
 
   else if(std::string(argv[1]) == "decodezs")
@@ -99,14 +109,15 @@ int main(int argc, char* argv[]) {
 
     start_tp_ = clock::now();
 
+    std::cout << "Timestamp: " << start_tp_.time_since_epoch().count() << std::endl;
+
     apollozs::apollozs::Map zsMap = 
           zserio::deserializeFromFile<apollozs::apollozs::Map>(std::string(argv[2]));
 
-    auto duration = std::chrono::duration<double>(clock::now() - start_tp_);
+    auto duration = clock::now() - start_tp_;
 
-    cout << "ZS decode duration: " << duration.count() << endl;
+    std::cout << "ZS decode duration: " << duration.count() / 1000000.0 << " milliseconds." << std::endl;
   }
-
   
   return 0;
 }

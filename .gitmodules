@@ -1,0 +1,3 @@
+[submodule "dep/zserio"]
+	path = dep/zserio
+	url = https://github.com/ndsev/zserio.git
